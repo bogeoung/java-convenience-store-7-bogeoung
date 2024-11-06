@@ -1,12 +1,13 @@
 package store;
 
 public class Product {
-    private String name;
-    private int price;
-    private int quantity;
-    private String promotion;
 
-    public Product(String name, int price, int quantity, String promotion) {
+    private final String name;
+    private final Promotion promotion;
+    private final int price;
+    private int quantity;
+
+    public Product(String name, int price, int quantity, Promotion promotion) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
@@ -25,7 +26,25 @@ public class Product {
         return quantity;
     }
 
-    public String getPromotion() {
+    public boolean isPromotionProduct() {
+        return promotion != null;
+    }
+
+    public void selled(final int quantity) {
+        this.quantity -= quantity;
+    }
+
+    public Promotion getPromotion() {
         return promotion;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", promotion=" + promotion +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                '}';
     }
 }
