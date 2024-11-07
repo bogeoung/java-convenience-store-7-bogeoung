@@ -1,14 +1,35 @@
 package store;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class MdFileProductInfoParser {
 
     private static final String PRODUCT_INFO_DELIMITER = ",";
+    private static Product lastProductHavePromotion = null;
+    private static List<Product> products;
 
     public static List<Product> parseAll(List<String> productInfos, Promotions promotions) {
-        return productInfos.stream().map(content -> parseToProduct(content, promotions)).toList();
+        products = new ArrayList<>();
+        for (String productInfo : productInfos) {
+            Product curProduct = parseToProduct(productInfo, promotions);
+            checkLastProductHavePromotion(curProduct);
+            products.add(curProduct);
+        }
+        return products;
+    }
+
+    private static void checkLastProductHavePromotion(Product curProduct) {
+        if (lastProductHavePromotion != null && !curProduct.getName()
+                .equals(lastProductHavePromotion.getName())) {
+            products.add(new Product(lastProductHavePromotion.getName(), lastProductHavePromotion.getPrice(), 0,
+                    null));
+            lastProductHavePromotion = null;
+        }
+        if (curProduct.isPromotionProduct()) {
+            lastProductHavePromotion = curProduct;
+        }
     }
 
     private static Product parseToProduct(String productInfo, Promotions promotions) {
