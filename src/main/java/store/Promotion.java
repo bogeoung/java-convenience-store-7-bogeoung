@@ -1,17 +1,18 @@
 package store;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Promotion {
 
     private final String name;
     private final int purchaseQuantity;
     private final int bonusQuantity;
-    private final Date startDay;
-    private final Date endDay;
+    private final LocalDateTime startDay;
+    private final LocalDateTime endDay;
 
-    public Promotion(String name, int purchaseQuantity, int bonusQuantity, Date startDay, Date endDay) {
+    public Promotion(String name, int purchaseQuantity, int bonusQuantity, LocalDateTime startDay,
+                     LocalDateTime endDay) {
         this.name = name;
         this.purchaseQuantity = purchaseQuantity;
         this.bonusQuantity = bonusQuantity;
@@ -23,20 +24,27 @@ public class Promotion {
         return name;
     }
 
-    public int getPurchaseQuantity() {
-        return purchaseQuantity;
+    public int getAppliableQuantity(int quantity) {
+        int bundleSize = purchaseQuantity + bonusQuantity;
+        if (quantity % bundleSize == purchaseQuantity) {
+            return (quantity / bundleSize + 1) * bundleSize;
+        }
+        return (quantity / bundleSize) * bundleSize;
     }
 
-    public int getBonusQuantity() {
-        return bonusQuantity;
+    public int getBonusQuantity(int quantity) {
+        if (quantity < purchaseQuantity + bonusQuantity) {
+            return 0;
+        }
+        return quantity / (purchaseQuantity + bonusQuantity);
     }
 
-    public Date getStartDay() {
-        return startDay;
+    public boolean checkValidatePromotionDate(LocalDateTime curDate) {
+        return curDate.isAfter(startDay) && curDate.isBefore(endDay);
     }
 
-    public Date getEndDay() {
-        return endDay;
+    public int getBundleSize() {
+        return this.bonusQuantity + this.purchaseQuantity;
     }
 
     @Override
