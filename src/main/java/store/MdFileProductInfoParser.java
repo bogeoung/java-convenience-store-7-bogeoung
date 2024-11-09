@@ -6,30 +6,17 @@ import java.util.Optional;
 
 public class MdFileProductInfoParser {
 
-    private static final String PRODUCT_INFO_DELIMITER = ",";
-    private static Product lastProductHavePromotion = null;
+    public static final String PRODUCT_INFO_DELIMITER = ",";
     private static List<Product> products;
 
     public static List<Product> parseAll(List<String> productInfos, Promotions promotions) {
         products = new ArrayList<>();
         for (String productInfo : productInfos) {
-            Product curProduct = parseToProduct(productInfo, promotions);
-            checkLastProductHavePromotion(curProduct);
-            products.add(curProduct);
+            Product product = parseToProduct(productInfo, promotions);
+            products.add(product);
+            checkLastProductHavePromotion(products);
         }
         return products;
-    }
-
-    private static void checkLastProductHavePromotion(Product curProduct) {
-        if (lastProductHavePromotion != null && !curProduct.getName()
-                .equals(lastProductHavePromotion.getName())) {
-            products.add(new Product(lastProductHavePromotion.getName(), lastProductHavePromotion.getPrice(), 0,
-                    null));
-            lastProductHavePromotion = null;
-        }
-        if (curProduct.isPromotionProduct()) {
-            lastProductHavePromotion = curProduct;
-        }
     }
 
     private static Product parseToProduct(String productInfo, Promotions promotions) {
@@ -46,6 +33,20 @@ public class MdFileProductInfoParser {
                     .orElseGet(() -> new Product(name, price, quantity, null));
         } catch (NumberFormatException e) {
             throw new RuntimeException();
+        }
+    }
+
+    private static void checkLastProductHavePromotion(List<Product> products) {
+        if (products.size() < 2) {
+            return;
+        }
+        Product productAddedBeforeBefore = products.get(products.size() - 2);
+        Product productAddBefore = products.getLast();
+        if (!productAddedBeforeBefore.getName().equals(productAddBefore.getName())) {
+            if (productAddedBeforeBefore.isPromotionProduct()) {
+                products.add(products.size() - 1, new Product(productAddedBeforeBefore.getName(),
+                        productAddedBeforeBefore.getPrice(), 0, null));
+            }
         }
     }
 }
