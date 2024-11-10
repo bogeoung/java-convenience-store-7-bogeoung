@@ -24,21 +24,13 @@ public class Application {
             OutputView.printStartPurchase(products);
             Customer customer = getPurchaseProducts(convenienceStore, products);
             purchase(convenienceStore, customer);
-            System.out.println(customer);
             String membershipDiscountApply = InputView.getValueUntilValidated(YES_OR_NO_INPUT_VALIDATE,
                     YES_OR_NO_INPUT_ERROR_MESSAGE,
                     InputView::getMembershipDiscountApply);
             List<PurchaseInfo> purchaseInfos = customer.getItemNames().stream()
                     .map(productName -> new PurchaseInfo(productName, customer.getItemCount(productName))).toList();
-            Receipt receipt = convenienceStore.purchase(purchaseInfos);
-
-            System.out.println(receipt.getPurchasedProducts());
-            System.out.println(receipt.getPromotionAppliedProducts());
-            System.out.println(receipt.getTotalAmount());
-            System.out.println(receipt.getTotalDiscountedAmount());
-            System.out.println(receipt.getMemberShipDiscountedAmount());
-            System.out.println(receipt.getTotalAmount() - receipt.getTotalDiscountedAmount()
-                    - receipt.getMemberShipDiscountedAmount());
+            Receipt receipt = convenienceStore.purchase(purchaseInfos, membershipDiscountApply);
+            OutputView.printTotalReceipt(receipt, membershipDiscountApply);
             String continuous = InputView.getValueUntilValidated(YES_OR_NO_INPUT_VALIDATE,
                     YES_OR_NO_INPUT_ERROR_MESSAGE,
                     InputView::continuePurchase);
