@@ -12,13 +12,77 @@ public class ConvenienceStore {
     }
 
     public boolean checkEnoughQuantity(String productName, int quantity) {
-        List<Product> products = this.products.stream()
-                .filter(product -> product.getName().equals(productName))
-                .toList();
+        List<Product> products = getProductsWithName(productName);
         for (Product product : products) {
             quantity -= product.getQuantity();
         }
         return quantity <= 0;
+    }
+
+    public List<Product> getProductsWithName(String productName) {
+        return products.stream()
+                .filter(product -> product.hasSameName(productName))
+                .toList();
+    }
+
+    public Receipt sellProducts(List<PurchaseInfo> purchaseInfos, String membershipDiscountApply) {
+        List<PurchasedProduct> purchasedProducts = purchaseInfos.stream().map(purchaseInfo -> {
+            Optional<Product> product = getNonPromotionProductWithName(purchaseInfo.getProductName());
+            int price = product.map(Product::getPrice)
+                    .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_SELLING_PRODUCT.getMessage()));
+            int bonusQuantity = getBonusQuantity(purchaseInfo);
+            decreaseQuantity(purchaseInfo);
+            return new PurchasedProduct(purchaseInfo, price, bonusQuantity);
+        }).toList();
+
+        return new Receipt(purchasedProducts, membershipDiscountApply);
+    }
+
+    public Optional<Product> getNonPromotionProductWithName(String productName) {
+        return products.stream()
+                .filter(product -> product.hasSameName(productName))
+                .filter(product -> !product.isPromotionProduct())
+                .findAny();
+    }
+
+    private int getBonusQuantity(PurchaseInfo purchaseInfo) {
+        String productName = purchaseInfo.getProductName();
+        int productQuantity = purchaseInfo.getProductQuantity();
+        if (getProductsWithName(productName).isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_SELLING_PRODUCT.getMessage());
+        }
+        Optional<Product> promotionProduct = getPromotionProductWithName(productName);
+        return promotionProduct.map(product -> product.getBonusQuantity(productQuantity)).orElse(0);
+    }
+
+    public Optional<Product> getPromotionProductWithName(String productName) {
+        return products.stream()
+                .filter(product -> product.hasSameName(productName))
+                .filter(Product::isPromotionProduct)
+                .findAny();
+    }
+
+    private void decreaseQuantity(PurchaseInfo purchaseInfo) {
+        String productName = purchaseInfo.getProductName();
+        int purchaseQuantity = purchaseInfo.getProductQuantity();
+        Optional<Product> promotionProduct = getPromotionProductWithName(productName);
+        Optional<Product> nonPromotionProduct = getNonPromotionProductWithName(productName);
+        if (promotionProduct.isPresent()) {
+            purchaseQuantity = decreasePromotionProductQuantityAndReturnLeft(promotionProduct.get(), purchaseQuantity);
+        }
+        if (nonPromotionProduct.isPresent()) {
+            nonPromotionProduct.get().decreaseQuantity(purchaseQuantity);
+        }
+    }
+
+    private int decreasePromotionProductQuantityAndReturnLeft(Product product, int purchasedQuantity) {
+        int quantity = product.getQuantity();
+        if (quantity >= purchasedQuantity) {
+            product.decreaseQuantity(purchasedQuantity);
+            return 0;
+        }
+        product.decreaseQuantity(quantity);
+        return purchasedQuantity - quantity;
     }
 
     public int getPromotionAppliedQuantity(String productName, int quantity) {
@@ -26,55 +90,5 @@ public class ConvenienceStore {
                 .filter(Product::isPromotionProduct)
                 .findAny();
         return promotionProduct.map(product -> product.sellablePromotionQuantity(quantity)).orElse(0);
-    }
-
-    public List<Product> getProductsWithName(String productName) {
-        return products.stream()
-                .filter(product -> product.getName().equals(productName))
-                .toList();
-    }
-
-    public Receipt purchase(List<PurchaseInfo> purchaseInfos, String membershipDiscountApply) {
-        List<PurchasedProduct> purchasedProducts = purchaseInfos.stream().map(purchaseInfo -> {
-            String productName = purchaseInfo.getProductName();
-            int productQuantity = purchaseInfo.getProductQuantity();
-            int bonusQuantity = 0;
-            List<Product> products = this.getProductsWithName(productName);
-            if (products.isEmpty()) {
-                throw new IllegalArgumentException("구매하려는 이름의 상품이 없습니다.");
-            }
-
-            Optional<Product> promotionProduct = products.stream().filter(Product::isPromotionProduct).findAny();
-            int promotionBonusQuantity = promotionProduct
-                    .map(product -> product.getBonusQuantity(productQuantity)).orElse(0);
-
-            bonusQuantity += promotionBonusQuantity;
-
-            int prevProductQuantity = purchaseInfo.getProductQuantity();
-
-            Optional<Product> nonPromotionProduct =
-                    products.stream().filter(product -> !product.isPromotionProduct()).findAny();
-
-            if (promotionProduct.isPresent()) {
-                Product product = promotionProduct.get();
-                int quantity = product.getQuantity();
-                if (quantity >= prevProductQuantity) {
-                    product.decreaseQuantity(prevProductQuantity);
-                    prevProductQuantity = 0;
-                }
-                if (quantity < prevProductQuantity) {
-                    product.decreaseQuantity(quantity);
-                    prevProductQuantity -= quantity;
-                }
-            }
-
-            if (nonPromotionProduct.isPresent()) {
-                Product product = nonPromotionProduct.get();
-                product.decreaseQuantity(prevProductQuantity);
-            }
-
-            return new PurchasedProduct(productName, products.getFirst().getPrice(), productQuantity, bonusQuantity);
-        }).toList();
-        return new Receipt(purchasedProducts, membershipDiscountApply);
     }
 }
