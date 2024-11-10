@@ -24,7 +24,7 @@ public class Receipt {
     }
 
     public int getTotalCount() {
-        return purchasedProducts.stream().mapToInt(product -> product.getQuantity() - product.getBonusQuantity()).sum();
+        return purchasedProducts.stream().mapToInt(PurchasedProduct::getQuantity).sum();
     }
 
     public int getTotalAmount() {
