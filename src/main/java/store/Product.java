@@ -16,6 +16,10 @@ public class Product {
         this.promotion = promotion;
     }
 
+    public boolean hasSameName(String name) {
+        return this.name.equals(name);
+    }
+
     public String getName() {
         return name;
     }
