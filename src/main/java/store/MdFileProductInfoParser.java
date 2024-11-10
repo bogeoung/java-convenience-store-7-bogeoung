@@ -7,10 +7,9 @@ import java.util.Optional;
 public class MdFileProductInfoParser {
 
     public static final String PRODUCT_INFO_DELIMITER = ",";
-    private static List<Product> products;
 
     public static List<Product> parseAll(List<String> productInfos, Promotions promotions) {
-        products = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         for (String productInfo : productInfos) {
             Product product = parseToProduct(productInfo, promotions);
             products.add(product);
@@ -24,6 +23,10 @@ public class MdFileProductInfoParser {
         if (splitInfos.length != 4) {
             throw new RuntimeException();
         }
+        return parseProductDetail(splitInfos, promotions);
+    }
+
+    private static Product parseProductDetail(String[] splitInfos, Promotions promotions) {
         try {
             String name = splitInfos[0].strip();
             int price = Integer.parseInt(splitInfos[1].strip());
@@ -36,17 +39,22 @@ public class MdFileProductInfoParser {
         }
     }
 
+
     private static void checkLastProductHavePromotion(List<Product> products) {
         if (products.size() < 2) {
             return;
         }
-        Product productAddedBeforeBefore = products.get(products.size() - 2);
-        Product productAddBefore = products.getLast();
-        if (!productAddedBeforeBefore.getName().equals(productAddBefore.getName())) {
-            if (productAddedBeforeBefore.isPromotionProduct()) {
-                products.add(products.size() - 1, new Product(productAddedBeforeBefore.getName(),
-                        productAddedBeforeBefore.getPrice(), 0, null));
+        Product secondLastAddedProduct = products.get(products.size() - 2);
+        Product lastAddedProduct = products.getLast();
+        if (!secondLastAddedProduct.getName().equals(lastAddedProduct.getName())) {
+            if (secondLastAddedProduct.isPromotionProduct()) {
+                addDefaultProduct(products, secondLastAddedProduct);
             }
         }
+    }
+
+    private static void addDefaultProduct(List<Product> products, Product product) {
+        products.add(products.size() - 1, new Product(product.getName(),
+                product.getPrice(), 0, null));
     }
 }
