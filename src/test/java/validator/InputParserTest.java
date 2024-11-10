@@ -31,13 +31,13 @@ public class InputParserTest {
     void 입력된_상품이_여러개라면_콤마를_기준으로_분리한다() {
         String input = "[사이다-1], [콜라-1]";
         List<String> products = new ArrayList<>(List.of("[사이다-1]", "[콜라-1]"));
-        assertEquals(products, InputParser.splitInput(input));
+        assertEquals(products, InputParser.splitInput(input, ","));
     }
 
     @Test
     void 입력에서_상품개수에_해당하는_문자열만_리턴한다() {
         String input = "[사이다-2]";
-        assertEquals("2", InputParser.getProductNumber(input));
+        assertEquals(2, InputParser.getProductQuantity(input));
     }
 
     @ParameterizedTest
