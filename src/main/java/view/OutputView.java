@@ -39,7 +39,7 @@ public class OutputView {
         }
     }
 
-    public static void printTotalReceipt(Receipt receipt, String membershipDiscountApply) {
+    public static void printTotalReceipt(Receipt receipt) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(RECEIPT_START_MESSAGE);
         printReceiptProductPart(stringBuffer, receipt.getPurchasedProducts());
@@ -102,11 +102,11 @@ public class OutputView {
     }
 
     public static void printProductNotExistMessage() {
-        System.out.println(ErrorMessage.NOT_SELLING_PRODUCT.getErrorMessage());
+        System.out.println(ErrorMessage.NOT_SELLING_PRODUCT.getMessage());
     }
 
     public static void printNotEnoughQuantityMessage() {
-        System.out.println(ErrorMessage.NOT_ENOUGH_QUANTITY.getErrorMessage());
+        System.out.println(ErrorMessage.NOT_ENOUGH_QUANTITY.getMessage());
     }
 
     private static String printCurrentProducts(Product product) {
