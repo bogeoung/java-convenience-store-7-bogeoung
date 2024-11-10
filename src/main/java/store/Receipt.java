@@ -8,9 +8,11 @@ public class Receipt {
     public static final long MAX_MEMBERSHIP_DISCOUNT_PRICE = 8000L;
 
     private final List<PurchasedProduct> purchasedProducts;
+    private final String membershipDiscountApply;
 
-    public Receipt(List<PurchasedProduct> purchasedProducts) {
+    public Receipt(List<PurchasedProduct> purchasedProducts, String membershipDiscountApply) {
         this.purchasedProducts = purchasedProducts;
+        this.membershipDiscountApply = membershipDiscountApply;
     }
 
     public List<PurchasedProduct> getPurchasedProducts() {
@@ -34,6 +36,9 @@ public class Receipt {
     }
 
     public long getMemberShipDiscountedAmount() {
+        if (membershipDiscountApply.equals("N")) {
+            return 0;
+        }
         int amountToApply = purchasedProducts.stream().filter(product -> product.getBonusQuantity() == 0)
                 .mapToInt(PurchasedProduct::getTotalPrice).sum();
         long discountedAmount = Math.round(amountToApply * MEMBERSHIP_DISCOUNT_RATE);
