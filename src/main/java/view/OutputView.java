@@ -63,9 +63,6 @@ public class OutputView {
 
     private static void printReceiptBonusProducts(StringBuffer stringBuffer,
                                                   List<PurchasedProduct> promotionAppliedProducts) {
-        if (promotionAppliedProducts.isEmpty()) {
-            return;
-        }
         stringBuffer.append(String.format(RECEIPT_BONUS_MESSAGE, System.lineSeparator()));
         for (PurchasedProduct purchasedProduct : promotionAppliedProducts) {
             stringBuffer.append(String.format(FORMATED_STRING_BONUS_PRODUCT, purchasedProduct.getName(),
