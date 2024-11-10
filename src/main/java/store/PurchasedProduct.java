@@ -7,11 +7,15 @@ public class PurchasedProduct {
     private final int quantity;
     private final int bonusQuantity;
 
-    public PurchasedProduct(String name, int price, int quantity, int bonusQuantity) {
+    private PurchasedProduct(String name, int price, int quantity, int bonusQuantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.bonusQuantity = bonusQuantity;
+    }
+
+    public PurchasedProduct(PurchaseInfo purchaseInfo, int price, int bonusQuantity) {
+        this(purchaseInfo.getProductName(), price, purchaseInfo.getProductQuantity(), bonusQuantity);
     }
 
     public String getName() {
