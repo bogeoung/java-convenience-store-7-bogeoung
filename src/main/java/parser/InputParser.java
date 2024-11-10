@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class InputParser {
-    
+
     public static boolean validateInputFormat(String input) {
         return Pattern.matches("^\\[\\s*\\S+\\s*-\\s*\\d+\\s*\\]$", input);
     }
@@ -15,7 +15,7 @@ public class InputParser {
                 .map(String::strip).toList();
     }
 
-    public static int getProductQuantity(String input) throws IllegalArgumentException, NumberFormatException {
+    public static int getProductQuantity(String input) throws IllegalArgumentException {
         String[] splitInfo = input.split("-");
         if (splitInfo.length < 2) {
             throw new IllegalArgumentException();
