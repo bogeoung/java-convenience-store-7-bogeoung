@@ -8,39 +8,44 @@ import java.util.List;
 public class MdFilePromotionInfoParser {
 
     private static final String PRODUCT_INFO_DELIMITER = ",";
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String TIME_FORMAT = "T00:00:00";
 
     public static List<Promotion> parseAll(List<String> promotionInfos) {
-        return promotionInfos.stream().map(MdFilePromotionInfoParser::parseToProduct).toList();
+        return promotionInfos.stream().map(MdFilePromotionInfoParser::parseToPromotion).toList();
     }
 
     public static LocalDateTime parseToLocalDateTime(String input) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            LocalDateTime parsedDate = LocalDateTime.parse(input + "T00:00:00", formatter);
-            return parsedDate;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT);
+            return LocalDateTime.parse(input + TIME_FORMAT, formatter);
         } catch (DateTimeParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException(ErrorMessage.MD_FILE_DATE_DATA_IS_WRONG.getMessage());
         }
-        return null;
     }
 
-    private static Promotion parseToProduct(String promotionInfo) {
+    private static Promotion parseToPromotion(String promotionInfo) {
         String[] splitInfos = promotionInfo.split(PRODUCT_INFO_DELIMITER);
         if (splitInfos.length != 5) {
             throw new RuntimeException();
         }
+        String name = splitInfos[0].strip();
+        int purchaseQuantity = Integer.parseInt(splitInfos[1].strip());
+        int bonusQuantity = Integer.parseInt(splitInfos[2].strip());
+        List<LocalDateTime> dateTimes = ParsePromotionDateTime(splitInfos);
+        return new Promotion(name, purchaseQuantity, bonusQuantity, dateTimes.getFirst(), dateTimes.getLast());
+    }
+
+    private static List<LocalDateTime> ParsePromotionDateTime(String[] splitInfos) {
         try {
-            String name = splitInfos[0].strip();
-            int purchaseQuantity = Integer.parseInt(splitInfos[1].strip());
-            int bonusQuantity = Integer.parseInt(splitInfos[2].strip());
             LocalDateTime startDay = parseToLocalDateTime(splitInfos[3].strip());
             LocalDateTime endDay = parseToLocalDateTime(splitInfos[4].strip());
             if (endDay.isBefore(startDay)) {
-                throw new RuntimeException();
+                throw new RuntimeException(ErrorMessage.MD_FILE_DATE_DATA_IS_WRONG.getMessage());
             }
-            return new Promotion(name, purchaseQuantity, bonusQuantity, startDay, endDay);
+            return List.of(startDay, endDay);
         } catch (NumberFormatException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(ErrorMessage.MD_FILE_DATA_IS_WRONG_FORMAT.getMessage());
         }
     }
 }
