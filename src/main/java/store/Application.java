@@ -55,23 +55,6 @@ public class Application {
         return customer;
     }
 
-    private static List<PurchaseInfo> getPurchaseInfos(Customer customer) {
-        return customer.getItemNames().stream()
-                .map(productName -> new PurchaseInfo(productName, customer.getItemCount(productName))).toList();
-    }
-
-    private static String getMembershipDiscountApply() {
-        return InputView.getValueUntilValidated(YES_OR_NO_INPUT_VALIDATE,
-                YES_OR_NO_INPUT_ERROR_MESSAGE,
-                InputView::getMembershipDiscountApply);
-    }
-
-    private static String getContinueIntention() {
-        return InputView.getValueUntilValidated(YES_OR_NO_INPUT_VALIDATE,
-                YES_OR_NO_INPUT_ERROR_MESSAGE,
-                InputView::continuePurchase);
-    }
-
     private static boolean purchaseWhenValidate(ConvenienceStore convenienceStore, List<Product> products,
                                                 String product, Customer customer) {
         try {
@@ -146,6 +129,23 @@ public class Application {
         if (apply.equals("N")) {
             customer.cancelPurchase(purchaseItemName, quantity - promotionAppliedQuantity);
         }
+    }
+
+    private static List<PurchaseInfo> getPurchaseInfos(Customer customer) {
+        return customer.getItemNames().stream()
+                .map(productName -> new PurchaseInfo(productName, customer.getItemCount(productName))).toList();
+    }
+
+    private static String getMembershipDiscountApply() {
+        return InputView.getValueUntilValidated(YES_OR_NO_INPUT_VALIDATE,
+                YES_OR_NO_INPUT_ERROR_MESSAGE,
+                InputView::getMembershipDiscountApply);
+    }
+
+    private static String getContinueIntention() {
+        return InputView.getValueUntilValidated(YES_OR_NO_INPUT_VALIDATE,
+                YES_OR_NO_INPUT_ERROR_MESSAGE,
+                InputView::continuePurchase);
     }
 
 }
