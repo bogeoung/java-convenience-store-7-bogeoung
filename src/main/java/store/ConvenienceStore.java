@@ -34,7 +34,7 @@ public class ConvenienceStore {
                 .toList();
     }
 
-    public Receipt purchase(List<PurchaseInfo> purchaseInfos) {
+    public Receipt purchase(List<PurchaseInfo> purchaseInfos, String membershipDiscountApply) {
         List<PurchasedProduct> purchasedProducts = purchaseInfos.stream().map(purchaseInfo -> {
             String productName = purchaseInfo.getProductName();
             int productQuantity = purchaseInfo.getProductQuantity();
@@ -75,6 +75,6 @@ public class ConvenienceStore {
 
             return new PurchasedProduct(productName, products.getFirst().getPrice(), productQuantity, bonusQuantity);
         }).toList();
-        return new Receipt(purchasedProducts);
+        return new Receipt(purchasedProducts, membershipDiscountApply);
     }
 }
