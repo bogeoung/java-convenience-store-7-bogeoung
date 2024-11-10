@@ -1,6 +1,6 @@
 package store;
 
-import java.time.LocalDateTime;
+import camp.nextstep.edu.missionutils.DateTimes;
 
 public class Product {
 
@@ -29,7 +29,10 @@ public class Product {
     }
 
     public boolean isPromotionProduct() {
-        return promotion != null;
+        if (promotion != null) {
+            return promotion.checkValidatePromotionDate(DateTimes.now());
+        }
+        return false;
     }
 
     public void decreaseQuantity(final int quantity) {
@@ -54,7 +57,7 @@ public class Product {
     }
 
     public int sellablePromotionQuantity(int quantity) {
-        if (!isPromotionProduct() || !promotion.checkValidatePromotionDate(LocalDateTime.now())) {
+        if (!isPromotionProduct() || !promotion.checkValidatePromotionDate(DateTimes.now())) {
             return 0;
         }
         if (this.quantity < promotion.getBundleSize()) {
