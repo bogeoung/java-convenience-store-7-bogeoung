@@ -94,7 +94,7 @@ public class Application {
     }
 
     private static void purchase(ConvenienceStore convenienceStore, Customer customer) {
-        for (String purchaseItemName : customer.getItemName()) {
+        for (String purchaseItemName : customer.getItemNames()) {
             int quantity = customer.getItemCount(purchaseItemName);
             int promotionAppliedQuantity = convenienceStore.getPromotionAppliedQuantity(purchaseItemName, quantity);
             if (promotionAppliedQuantity > quantity) {

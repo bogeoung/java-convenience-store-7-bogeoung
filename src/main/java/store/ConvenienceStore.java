@@ -41,7 +41,7 @@ public class ConvenienceStore {
     public Optional<Product> getNonPromotionProductWithName(String productName) {
         return products.stream()
                 .filter(product -> product.hasSameName(productName))
-                .filter(product -> !product.isPromotionProduct())
+                .filter(Product::isNonPromotionProduct)
                 .findAny();
     }
 
@@ -58,7 +58,7 @@ public class ConvenienceStore {
     public Optional<Product> getPromotionProductWithName(String productName) {
         return products.stream()
                 .filter(product -> product.hasSameName(productName))
-                .filter(Product::isPromotionProduct)
+                .filter(Product::isValidPromotionProduct)
                 .findAny();
     }
 
@@ -87,7 +87,7 @@ public class ConvenienceStore {
 
     public int getPromotionAppliedQuantity(String productName, int quantity) {
         Optional<Product> promotionProduct = getProductsWithName(productName).stream()
-                .filter(Product::isPromotionProduct)
+                .filter(Product::isValidPromotionProduct)
                 .findAny();
         return promotionProduct.map(product -> product.sellablePromotionQuantity(quantity)).orElse(0);
     }
