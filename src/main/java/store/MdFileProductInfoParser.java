@@ -47,7 +47,7 @@ public class MdFileProductInfoParser {
         Product secondLastAddedProduct = products.get(products.size() - 2);
         Product lastAddedProduct = products.getLast();
         if (!secondLastAddedProduct.getName().equals(lastAddedProduct.getName())) {
-            if (secondLastAddedProduct.isPromotionProduct()) {
+            if (secondLastAddedProduct.isValidPromotionProduct()) {
                 addDefaultProduct(products, secondLastAddedProduct);
             }
         }
