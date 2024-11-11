@@ -8,12 +8,12 @@ import store.Receipt;
 
 public class OutputView {
 
-    private static final String START_PURCHASE_COMMENT = "안녕하세요. W편의점입니다. \n현재 보유하고 있는 상품입니다.\n";
+    private static final String START_PURCHASE_COMMENT = "\n안녕하세요. W편의점입니다. \n현재 보유하고 있는 상품입니다.\n";
     private static final String PRODUCT_START_SIGN = "- ";
     private static final String PRODUCT_QUANTITY_UNIT = "%d개";
     private static final String PRODUCT_PRICE_UNIT = "%,d원";
     private static final String PRODUCT_QUANTITY_ZERO = "재고 없음";
-    private static final String RECEIPT_START_MESSAGE = "==============W 편의점================\n";
+    private static final String RECEIPT_START_MESSAGE = "\n==============W 편의점================\n";
     private static final String RECEIPT_ITEM_MESSAGE = "%-18s%-9s%-6s%s";
     private static final String RECEIPT_BONUS_MESSAGE = "=============증\t\t\t정===============%s";
     private static final String RECEIPT_TOTAL_MESSAGE = "====================================\n";
