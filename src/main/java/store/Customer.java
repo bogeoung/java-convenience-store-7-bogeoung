@@ -26,10 +26,6 @@ public class Customer {
         }
     }
 
-    public List<String> getItemName() {
-        return items.keySet().stream().toList();
-    }
-
     public int getItemCount(String itemName) {
         return items.get(itemName);
     }
